@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  var MANIFEST_URL = 'https://raw.githubusercontent.com/closeocean/Prismline/main/manifest.txt';
+  var MANIFEST_URL = 'https://raw.githubusercontent.com/c8dylann/Prismline/main/manifest.txt';
   var LOADER_NAME = 'PrismlineLoader.exe';
 
   // ---- live version / size (falls back silently to the static text in the page) ----
