@@ -114,8 +114,7 @@ h2 { font-size: clamp(26px, 3.6vw, 34px); margin: 0 0 10px; letter-spacing: -0.0
 .card p { margin: 0; color: var(--muted); font-size: 15px; }
 .card .tag { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-2); }
 
-/* ---------- gallery ---------- */
-.gallery { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; align-items: start; }
+/* ---------- screenshot frame (loader picture) ---------- */
 .shot {
   margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
   overflow: hidden; cursor: zoom-in; padding: 0; text-align: left; color: inherit; font: inherit;
@@ -124,10 +123,6 @@ h2 { font-size: clamp(26px, 3.6vw, 34px); margin: 0 0 10px; letter-spacing: -0.0
 .shot img { width: 100%; height: auto; background: #0b0e17; }
 .shot figcaption { padding: 10px 14px 12px; font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); }
 .shot figcaption b { color: var(--text); font-weight: 600; }
-.shot.s-wide { grid-column: span 12; }
-.shot.s-3 { grid-column: span 4; }
-.shot.s-half { grid-column: span 6; }
-.shot.s-wide img { max-height: 440px; object-fit: contain; }
 
 /* ---------- install ---------- */
 .install-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 28px; align-items: start; }
@@ -186,14 +181,12 @@ footer { border-top: 1px solid var(--line); padding: 34px 0 44px; color: var(--d
   .hero-grid, .install-grid { grid-template-columns: 1fr; }
   .hero { padding-top: 48px; }
   .cards { grid-template-columns: 1fr 1fr; }
-  .shot.s-3 { grid-column: span 6; }
   .install-side { max-width: 420px; }
 }
 @media (max-width: 600px) {
   section { padding: 52px 0; }
   .nav-links a:not(.cta) { display: none; }
   .cards { grid-template-columns: 1fr; }
-  .shot.s-3, .shot.s-half { grid-column: span 12; }
   .download-box { padding: 20px; }
   .btn.big { width: 100%; justify-content: center; }
 }

@@ -1,43 +1,45 @@
-// Prismline site: lightbox + live version info from the update manifest.
+// Prismline site: lightbox + the latest release (download link, version, size) from GitHub.
 (function () {
   'use strict';
 
-  var MANIFEST_URL = 'https://raw.githubusercontent.com/c8dylann/Prismline/main/manifest.txt';
-  var LOADER_NAME = 'PrismlineLoader.exe';
+  var RELEASE_API = 'https://api.github.com/repos/c8dylann/Prismline/releases/latest';
 
-  // ---- live version / size (falls back silently to the static text in the page) ----
+  // ---- latest release (falls back silently to the link and text already in the page) ----
   function fmtSize(bytes) {
     if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
     return Math.round(bytes / 1024) + ' KB';
   }
 
-  function setAll(sel, text) {
+  function setAll(sel, fn) {
     var els = document.querySelectorAll(sel);
-    for (var i = 0; i < els.length; i++) els[i].textContent = text;
+    for (var i = 0; i < els.length; i++) fn(els[i]);
   }
 
-  function applyManifest(text) {
-    var version = null, size = null;
-    text.split(/\r?\n/).forEach(function (line) {
-      var m = line.match(/^version\s+(.+)$/);
-      if (m) version = m[1].trim();
-      var f = line.match(/^file\s+[0-9a-fA-F]{64}\s+(\d+)\s+(.+)$/);
-      if (f && f[2].trim() === LOADER_NAME) size = parseInt(f[1], 10);
-    });
-    if (version) {
-      setAll('[data-version]', version);
-      var live = document.querySelectorAll('[data-live]');
-      for (var i = 0; i < live.length; i++) live[i].hidden = false;
+  function applyRelease(rel) {
+    var zip = null;
+    var assets = (rel && rel.assets) || [];
+    for (var i = 0; i < assets.length; i++) {
+      if (/\.zip$/i.test(assets[i].name)) { zip = assets[i]; break; }
     }
-    if (size) setAll('[data-size]', fmtSize(size));
+    if (!zip) return;
+
+    // "Prismline v3.0.4b" -> "v3.0.4b"; if the release has no usable name, take it from the file name
+    var version = (rel.name || '').replace(/^\s*prismline[\s._-]*/i, '').trim() ||
+                  zip.name.replace(/^prismline[._-]*/i, '').replace(/\.zip$/i, '');
+
+    setAll('[data-download]', function (a) { a.href = zip.browser_download_url; });
+    setAll('[data-file]', function (e) { e.textContent = zip.name; });
+    setAll('[data-size]', function (e) { e.textContent = fmtSize(zip.size); });
+    if (version) setAll('[data-version]', function (e) { e.textContent = version; });
+    setAll('[data-live]', function (e) { e.hidden = false; });
   }
 
   try {
     if (window.fetch) {
-      fetch(MANIFEST_URL, { cache: 'no-cache' })
-        .then(function (r) { return r.ok ? r.text() : Promise.reject(); })
-        .then(applyManifest)
-        .catch(function () { /* offline or blocked: keep the static text */ });
+      fetch(RELEASE_API, { headers: { Accept: 'application/vnd.github+json' } })
+        .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+        .then(applyRelease)
+        .catch(function () { /* offline, blocked or rate limited: keep the static link and text */ });
     }
   } catch (e) { /* ignore */ }
 
